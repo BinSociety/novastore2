@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaStore | Tienda Online de Tecnología y Accesorios</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="NovaStore - Tu tienda online de tecnología, accesorios y productos electrónicos en Paraguay. Envíos a todo el país en 24/48hs.">
+    <meta name="keywords" content="tecnología, accesorios, electrónica, compras online, Paraguay, tienda online, novastore">
+    <meta name="author" content="NovaStore">
+    <meta property="og:title" content="NovaStore | Tienda Online de Tecnología">
+    <meta property="og:description" content="Los mejores productos tecnológicos al mejor precio. Envíos a todo Paraguay.">
+    <meta property="og:image" content="https://ik.imagekit.io/staxxcraft/unnamed.jpg">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="https://img.icons8.com/color/48/shopping-bag.png">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/96/shopping-bag.png">
+    
+    <!-- External CSS/JS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Estilos base */
+        body { 
+            -webkit-tap-highlight-color: transparent; 
+            overflow-x: hidden;
+        }
+        
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Animaciones y efectos */
+        .product-card { 
+            transition: transform 0.2s, box-shadow 0.2s; 
+        }
+        .product-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); 
+        }
+        .product-card:active { transform: scale(0.98); }
+
+        /* Gradientes */
+        .btn-brand {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+
+        /* Modal animations */
+        .slide-screen {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+            z-index: 60;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .slide-screen {
+            transform: translateY(100%);
+        }
+        @media (min-width: 768px) {
+            .slide-screen {
+                transform: translateY(20px); 
+            }
+        }
+        .slide-screen.active {
+            transform: translateY(0) !important;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 55;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Line clamp */
+        .line-clamp-2 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+        .line-clamp-3 {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+
+        /* Acordeón */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .accordion-content.active {
+            max-height: 500px;
+        }
+
+        /* Mejoras para acordeones */
+        #brand-list button, #model-list button {
+            border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+        }
+
+        #brand-list button:last-child, #model-list button:last-child {
+            border-bottom: none;
+        }
+
+        /* Transición suave para íconos de acordeón */
+        #brand-accordion i, #model-accordion i {
+            transition: transform 0.3s ease;
+        }
+
+        /* Estado activo para botones de tipo */
+        #type-funda.active, #type-estuche.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            border-color: #3b82f6;
+        }
+
+        /* Estilos personalizados para el banner */
+        .banner-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Estilos nuevos para la modal de accesorios */
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 0.5rem;
+            padding: 0.5rem;
+        }
+        .model-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            transition: all 0.2s;
+        }
+        .model-btn:hover {
+            background: #334155;
+            border-color: #3b82f6;
+        }
+        .model-btn.selected {
+            background: #2563eb;
+            border-color: #3b82f6;
+            color: white;
+        }
+        .gallery-scroll {
+            display: flex;
+            gap: 0.75rem;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: #334155 #0f172a;
+        }
+        .gallery-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+        .gallery-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 2px;
+        }
+        .gallery-item {
+            flex: 0 0 auto;
+            width: 80px;
+            height: 80px;
+            border-radius: 0.75rem;
+            background: #1e293b;
+            border: 1px solid #334155;
+            overflow: hidden;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .accordion-btn i {
+            transition: transform 0.3s;
+        }
+
+        /* Estilos para nuevos modales informativos */
+        .info-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .info-modal.active {
+            display: flex;
+        }
+        .info-modal-content {
+            background: #1e293b;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #334155;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-white font-sans selection:bg-blue-500 selection:text-white">
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black/50 z-40 hidden" onclick="toggleMobileMenu()"></div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed left-0 top-0 h-full w-64 bg-slate-900 z-50 border-r border-slate-800 p-6">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-xl font-bold">Menú</h2>
+            <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <nav class="space-y-4">
+            <a href="#" onclick="goHome(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-home mr-3"></i> Inicio</a>
+            <a href="#" onclick="openStoreModal(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-store mr-3"></i> Tienda</a>
+            <a href="#" onclick="openAboutModal(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-users mr-3"></i> Nosotros</a>
+            <a href="#" onclick="openContactModal(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-envelope mr-3"></i> Contacto</a>
+            <hr class="border-slate-800 my-4">
+            <a href="#" onclick="openPoliciesModal(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-truck mr-3"></i> Envíos</a>
+            <a href="#" onclick="openPoliciesModal(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-shield-alt mr-3"></i> Garantía</a>
+            <a href="#" onclick="openPoliciesModal(); toggleMobileMenu();" class="block py-2 text-slate-300 hover:text-white transition"><i class="fa-solid fa-file-contract mr-3"></i> Términos</a>
+        </nav>
+    </div>
+
+    <!-- Main Wrapper -->
+    <div class="max-w-7xl mx-auto min-h-screen bg-slate-950 border-x border-slate-900 shadow-2xl relative">
+
+        <!-- ================= MAIN VIEW ================= -->
+        <div id="main-view" class="pb-24 transition-transform duration-300 min-h-screen">
+            
+            <!-- HEADER -->
+            <header class="fixed top-0 w-full max-w-7xl glass z-30 border-b border-slate-800">
+                <div class="flex justify-between items-center p-4 md:px-8">
+                    <!-- Logo -->
+                    <div class="flex items-center gap-2 cursor-pointer group" onclick="goHome()">
+                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/30 group-hover:bg-blue-500 transition">
+                            <i class="fa-solid fa-cube text-lg md:text-xl"></i>
+                        </div>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">Nova<span class="text-blue-500">Store</span></h1>
+                    </div>
+
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex gap-6 text-sm font-medium text-slate-300">
+                        <a href="#" onclick="goHome()" class="hover:text-white transition">Inicio</a>
+                        <a href="#" onclick="openStoreModal()" class="hover:text-white transition">Tienda</a>
+                        <a href="#" onclick="openAboutModal()" class="hover:text-white transition">Nosotros</a>
+                        <a href="#" onclick="openContactModal()" class="hover:text-white transition">Contacto</a>
+                    </div>
+
+                    <!-- Icons & Search -->
+                    <div class="flex gap-4 md:gap-6 items-center">
+                        <!-- Search Button (Mobile) -->
+                        <button class="md:hidden text-slate-300 hover:text-white" onclick="toggleSearch()">
+                            <i class="fa-solid fa-search text-xl"></i>
+                        </button>
+                        
+                        <!-- Desktop Search -->
+                        <div class="hidden md:block relative">
+                            <input type="text" id="search-input" placeholder="Buscar productos..." 
+                                   class="bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm w-64 focus:outline-none focus:border-blue-500">
+                            <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
+                        </div>
+
+                        <!-- Cart -->
+                        <button class="relative group" onclick="openCart()">
+                            <i class="fa-solid fa-shopping-bag text-xl md:text-2xl text-slate-300 group-hover:text-white transition"></i>
+                            <span id="cart-count" class="absolute -top-1 -right-1 bg-blue-500 text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                        </button>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button class="text-slate-300 hover:text-white md:hidden" onclick="toggleMobileMenu()">
+                            <i class="fa-solid fa-bars text-xl"></i>
+                        </button>
+                        
+                        <!-- Admin Button (Desktop) -->
+                        <button class="hidden md:block bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold border border-slate-700 hover:bg-slate-700 transition">
+                            Admin
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Search Bar -->
+                <div id="mobile-search" class="md:hidden p-4 border-t border-slate-800 hidden">
+                    <div class="relative">
+                        <input type="text" id="mobile-search-input" placeholder="Buscar productos..." 
+                               class="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
+                    </div>
+                </div>
+
+                <!-- Categories -->
+                <div class="flex overflow-x-auto gap-3 px-4 md:px-8 pb-3 no-scrollbar border-t border-slate-800/50 pt-3 md:justify-center">
+                    <button onclick="filter(this, 'todo')" class="cat-btn px-4 py-1.5 rounded-full bg-blue-600 text-white font-bold text-sm whitespace-nowrap shadow-lg shadow-blue-900/20 transition hover:scale-105">Todos</button>
+                    <button onclick="filter(this, 'tech')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm whitespace-nowrap border border-slate-700 hover:bg-slate-700 transition hover:scale-105">📱 Tech</button>
+                    <button onclick="filter(this, 'accesorios')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm whitespace-nowrap border border-slate-700 hover:bg-slate-700 transition hover:scale-105">🎧 Accesorios</button>
+                    <button onclick="filter(this, 'outlet')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm whitespace-nowrap border border-slate-700 hover:bg-slate-700 transition hover:scale-105">🏷️ Outlet</button>
+                    <button onclick="filter(this, 'fundas-laminas')" class="cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm whitespace-nowrap border border-slate-700 hover:bg-slate-700 transition hover:scale-105">📱 Fundas/Láminas</button>
+                </div>
+            </header>
+
+            <!-- PROMO BANNER - Nuevo diseño que abre la modal de accesorios -->
+            <div class="mt-36 md:mt-40 mx-3 md:mx-8 mb-8 p-6 md:p-10 rounded-2xl bg-gradient-to-br from-purple-900 via-indigo-900 to-cyan-900 border border-cyan-700/50 relative overflow-hidden group cursor-pointer hover:border-cyan-500/50 transition duration-500 banner-pattern" onclick="openAccessoryModal()">
+                <!-- Elementos decorativos -->
+                <div class="absolute right-0 top-0 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl -mr-20 -mt-20 group-hover:bg-cyan-500/30 transition duration-700"></div>
+                <div class="absolute left-0 bottom-0 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl -ml-20 -mb-20"></div>
+                
+                <div class="relative z-10 max-w-2xl">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 bg-cyan-600/30 text-cyan-300 rounded-full text-xs font-bold border border-cyan-500/30">✨ NUEVO</span>
+                        <span class="px-3 py-1 bg-purple-600/30 text-purple-300 rounded-full text-xs font-bold border border-purple-500/30">📦 +500 modelos</span>
+                    </div>
+                    <h3 class="text-2xl md:text-4xl font-bold text-white mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen-button text-cyan-400"></i>
+                        Protege y Personaliza tu Teléfono
+                    </h3>
+                    <p class="text-sm md:text-lg text-slate-200 mb-4 max-w-lg">
+                        Descubre nuestra amplia colección de <span class="font-bold text-cyan-300">fundas, láminas de vidrio templado y estuches</span> para los últimos modelos.
+                    </p>
+                    <div class="flex flex-wrap gap-2 mb-5">
+                        <span class="px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-medium text-slate-200 border border-slate-600">iPhone 15/14/13</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-medium text-slate-200 border border-slate-600">Samsung S24/S23</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-medium text-slate-200 border border-slate-600">Xiaomi 14/13</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-medium text-slate-200 border border-slate-600">Motorola Edge</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-medium text-slate-200 border border-slate-600">Honor Magic</span>
+                        <span class="px-3 py-1.5 bg-slate-800/80 backdrop-blur-sm rounded-full text-xs font-medium text-slate-200 border border-slate-600">Google Pixel</span>
+                        <span class="px-3 py-1.5 bg-cyan-600/80 backdrop-blur-sm rounded-full text-xs font-bold text-white border border-cyan-400">+30 marcas</span>
+                    </div>
+                    <!-- Botón que abre la modal -->
+                    <button onclick="openAccessoryModal(); event.stopPropagation();" class="bg-white hover:bg-slate-200 text-slate-900 px-6 py-3 rounded-lg text-sm font-bold transition flex items-center gap-2 group/btn shadow-xl shadow-cyan-900/30">
+                        <span>Explorar Fundas, Láminas y Estuches</span>
+                        <i class="fa-solid fa-arrow-right group-hover/btn:translate-x-1.5 transition-transform"></i>
+                    </button>
+                </div>
+                <!-- Imagen decorativa -->
+                <div class="absolute right-5 bottom-0 hidden lg:block opacity-30 group-hover:opacity-40 transition">
+                    <i class="fa-solid fa-mobile-screen text-9xl text-white/20"></i>
+                </div>
+            </div>
+
+            <!-- PRODUCTS GRID -->
+            <main class="px-3 md:px-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6" id="feed-container">
+                <!-- Products loaded by JavaScript -->
+            </main>
+
+            <!-- LOADING SKELETON (Hidden by default) -->
+            <div id="loading-skeleton" class="px-3 md:px-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6 hidden">
+                <div class="product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 h-64 skeleton"></div>
+                <div class="product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 h-64 skeleton"></div>
+                <div class="product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 h-64 skeleton"></div>
+                <div class="product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 h-64 skeleton"></div>
+                <div class="product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 h-64 skeleton"></div>
+            </div>
+
+            <!-- WHATSAPP FLOATING BUTTON -->
+            <a href="https://wa.me/595986725905" target="_blank" class="fixed bottom-6 right-4 md:right-8 bg-[#25D366] text-white px-4 py-3 md:px-6 md:py-4 rounded-full flex items-center gap-3 font-bold z-20 shadow-lg shadow-green-900/30 active:scale-95 transition-transform hover:-translate-y-1 hover:shadow-green-500/40 group">
+                <i class="fa-brands fa-whatsapp text-2xl"></i>
+                <span class="hidden md:inline group-hover:inline">¡Contáctanos!</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- MODAL OVERLAY (Desktop only) -->
+    <div id="modal-overlay" class="modal-overlay hidden md:block" onclick="closeProduct()"></div>
+
+    <!-- PRODUCT DETAIL VIEW -->
+    <div id="product-view" class="fixed inset-0 md:w-[950px] md:h-[650px] md:max-w-[95vw] md:max-h-[90vh] md:m-auto bg-slate-950 md:bg-slate-900 md:rounded-2xl overflow-y-auto no-scrollbar md:overflow-hidden slide-screen shadow-2xl md:border md:border-slate-700 flex flex-col md:flex-row">
+        
+        <!-- Close Button (Mobile) -->
+        <button onclick="closeProduct()" class="md:hidden fixed top-4 left-4 z-[70] bg-black/40 backdrop-blur text-white w-10 h-10 rounded-full flex items-center justify-center border border-white/10">
+            <i class="fa-solid fa-arrow-left"></i>
+        </button>
+
+        <!-- Close Button (Desktop) -->
+        <button onclick="closeProduct()" class="hidden md:flex absolute top-4 right-4 z-[70] bg-slate-800/80 text-white w-8 h-8 rounded-full items-center justify-center hover:bg-red-500">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- Product Image -->
+        <div class="relative h-[45vh] md:h-full w-full md:w-1/2 bg-black">
+            <img id="p-img" src="" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800&q=80'">
+            <div id="p-badge" class="absolute top-4 right-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">Nuevo</div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="flex flex-col flex-1 h-full bg-slate-950 md:bg-slate-900 overflow-hidden">
+            <div class="p-6 md:p-8 overflow-y-auto no-scrollbar flex-1 pb-32 md:pb-8">
+                <p id="p-cat" class="text-blue-400 text-sm font-bold uppercase tracking-wider mb-1">Categoría</p>
+                <h1 id="p-title" class="text-2xl md:text-3xl font-bold leading-tight mb-3 text-white">Nombre del Producto</h1>
+                
+                <div class="flex items-center gap-3 mb-6">
+                    <p id="p-price" class="text-3xl font-bold text-white font-mono">0 Gs</p>
+                    <span id="p-old-price" class="text-slate-500 line-through text-lg hidden">0 Gs</span>
+                </div>
+
+                <!-- Flavors Section (Dynamic) -->
+                <div id="flavors-section" class="mb-6 hidden">
+                    <h3 class="font-bold text-slate-200 mb-3 text-lg">Selecciona un Sabor</h3>
+                    <div id="flavors-container" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Phone Model Section (for fundas-laminas) -->
+                <div id="phone-model-section" class="mb-6 hidden">
+                    <h3 class="font-bold text-slate-200 mb-3 text-lg">Selecciona tu teléfono</h3>
+                    <div class="space-y-4">
+                        <!-- Selección de tipo: Funda o Estuche -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-400 mb-2">Tipo de producto</label>
+                            <div class="flex gap-2">
+                                <button id="type-funda" onclick="selectType('funda')" class="flex-1 py-2 px-4 rounded-lg border border-slate-700 bg-blue-600 border-blue-500 text-white transition">
+                                    <i class="fa-solid fa-mobile-screen mr-2"></i> Fundas
+                                </button>
+                                <button id="type-estuche" onclick="selectType('estuche')" class="flex-1 py-2 px-4 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition">
+                                    <i class="fa-solid fa-briefcase mr-2"></i> Laminas
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Acordeón para Marca -->
+                        <div>
+                            <button id="brand-accordion" class="w-full bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center hover:bg-slate-700 transition">
+                                <span id="selected-brand-text" class="flex items-center gap-2">
+                                    <i class="fa-solid fa-mobile-alt"></i>
+                                    <span>Selecciona la marca</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down transition-transform"></i>
+                            </button>
+                            <div id="brand-list" class="accordion-content bg-slate-900/50 rounded-xl mt-1 border border-slate-800 max-h-60 overflow-y-auto">
+                                <!-- Marcas se llenarán dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Acordeón para Modelo -->
+                        <div>
+                            <button id="model-accordion" class="w-full bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center hover:bg-slate-700 transition">
+                                <span id="selected-model-text" class="flex items-center gap-2">
+                                    <i class="fa-solid fa-layer-group"></i>
+                                    <span>Selecciona el modelo</span>
+                                </span>
+                                <i class="fa-solid fa-chevron-down transition-transform"></i>
+                            </button>
+                            <div id="model-list" class="accordion-content bg-slate-900/50 rounded-xl mt-1 border border-slate-800 max-h-60 overflow-y-auto">
+                                <!-- Modelos se llenarán dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-slate-200 mb-2">Descripción</h3>
+                    <p id="p-desc" class="text-slate-400 text-sm leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-slate-800 line-clamp-3">
+                        Detalles del producto...
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+                        <i class="fa-solid fa-shield-halved text-blue-500"></i>
+                        <span class="text-xs text-slate-300 font-bold">Garantía 30 días</span>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+                        <i class="fa-solid fa-truck-fast text-green-500"></i>
+                        <span class="text-xs text-slate-300 font-bold">Envío Express</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fixed Buy Button -->
+            <div class="p-4 md:p-8 bg-slate-950/80 md:bg-slate-900/80 border-t border-slate-800 backdrop-blur-md">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="addToCartFromModal()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 border border-slate-700 transition">
+                        <span>Agregar</span>
+                        <i class="fa-solid fa-cart-plus"></i>
+                    </button>
+                    <button onclick="buyNow()" class="btn-brand text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-blue-900/50 hover:opacity-90 transition">
+                        <span>Comprar Ahora</span>
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NUEVA MODAL PARA ESTUCHES Y LÁMINAS (remodelada) -->
+    <div id="accessory-modal" class="fixed inset-0 bg-black/70 z-[200] hidden items-center justify-center p-2 md:p-6 overflow-y-auto">
+        <div class="bg-slate-900 rounded-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden flex flex-col border border-slate-700">
+            <!-- Header -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900 sticky top-0 z-10">
+                <h2 class="text-2xl md:text-3xl font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-mobile-screen-button text-blue-500"></i> 
+                    Personaliza tu equipo
+                </h2>
+                <button onclick="closeAccessoryModal()" class="text-slate-400 hover:text-white bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Cuerpo: dos columnas -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- COLUMNA IZQUIERDA: ESTUCHES / FUNDAS -->
+                <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-briefcase text-2xl text-blue-400"></i>
+                        <h3 class="text-xl font-bold">Estuches / Fundas</h3>
+                    </div>
+                    
+                    <!-- Buscador de modelos (filtra en esta columna) -->
+                    <input type="text" id="search-case" placeholder="Buscar modelo (ej. iPhone 15, S23...) " 
+                           class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 mb-4 text-sm focus:outline-none focus:border-blue-500"
+                           oninput="filterAccessoryModels('case', this.value)">
+                    
+                    <!-- Acordeón de marcas y modelos -->
+                    <div id="case-accordion-container" class="space-y-2 mb-4 flex-1 overflow-y-auto max-h-96 pr-1">
+                        <!-- Se llena dinámicamente con JS -->
+                    </div>
+                    
+                    <!-- Galería de imágenes de ejemplo para estuches -->
+                    <div class="mt-4">
+                        <p class="text-sm text-slate-400 mb-2"><i class="fa-regular fa-images mr-1"></i> Ejemplos de estuches</p>
+                        <div class="gallery-scroll" id="case-gallery">
+                            <!-- Se llena con JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Botón agregar al carrito -->
+                    <button id="add-case-btn" onclick="addAccessoryToCart('case')" class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa-solid fa-cart-plus"></i> Agregar estuche seleccionado
+                    </button>
+                </div>
+                
+                <!-- COLUMNA DERECHA: LÁMINAS / VIDRIO TEMPLADO -->
+                <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-700 flex flex-col h-full">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="fa-regular fa-square text-2xl text-cyan-400"></i>
+                        <h3 class="text-xl font-bold">Láminas / Vidrio Templado</h3>
+                    </div>
+                    
+                    <input type="text" id="search-glass" placeholder="Buscar modelo (ej. iPhone 15, S23...) " 
+                           class="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 mb-4 text-sm focus:outline-none focus:border-blue-500"
+                           oninput="filterAccessoryModels('glass', this.value)">
+                    
+                    <div id="glass-accordion-container" class="space-y-2 mb-4 flex-1 overflow-y-auto max-h-96 pr-1">
+                        <!-- Se llena dinámicamente con JS -->
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p class="text-sm text-slate-400 mb-2"><i class="fa-regular fa-images mr-1"></i> Ejemplos de láminas</p>
+                        <div class="gallery-scroll" id="glass-gallery">
+                            <!-- Se llena con JS -->
+                        </div>
+                    </div>
+                    
+                    <button id="add-glass-btn" onclick="addAccessoryToCart('glass')" class="mt-4 w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        <i class="fa-solid fa-cart-plus"></i> Agregar lámina seleccionada
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Footer con mensaje -->
+            <div class="p-3 border-t border-slate-800 text-center text-xs text-slate-500">
+                Seleccioná una marca y luego un modelo para habilitar la compra. Las imágenes son de referencia.
+            </div>
+        </div>
+    </div>
+
+    <!-- CART MODAL -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            <!-- Header -->
+            <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+                <h2 class="text-2xl font-bold">Tu Carrito</h2>
+                <button onclick="closeCart()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Cart Items -->
+            <div id="cart-items-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+                <!-- Cart items will be loaded here -->
+                <p class="text-slate-500 text-center py-8">Tu carrito está vacío</p>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 border-t border-slate-800">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-lg font-bold">Total:</span>
+                    <span id="cart-total" class="text-2xl font-bold text-blue-400">0 Gs</span>
+                </div>
+                <button onclick="checkout()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2">
+                    <span>Finalizar Compra por WhatsApp</span>
+                    <i class="fa-brands fa-whatsapp"></i>
+                </button>
+                <p class="text-slate-500 text-xs text-center mt-4">Al finalizar, serás redirigido a WhatsApp para coordinar el pago y envío.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== NUEVOS MODALES INFORMATIVOS ========== -->
+
+    <!-- MODAL TIENDA -->
+    <div id="store-modal" class="info-modal">
+        <div class="info-modal-content">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fa-solid fa-store text-blue-500"></i> Nuestra Tienda</h2>
+                <button onclick="closeStoreModal()" class="text-slate-400 hover:text-white bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-slate-300">En NovaStore nos apasiona la tecnología. Ofrecemos una cuidada selección de productos electrónicos, accesorios y gadgets para mejorar tu día a día.</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <i class="fa-solid fa-truck-fast text-2xl text-blue-400 mb-2"></i>
+                        <h3 class="font-bold">Envío Rápido</h3>
+                        <p class="text-sm text-slate-400">Entregas en 24/48hs en todo Paraguay.</p>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <i class="fa-solid fa-shield-halved text-2xl text-green-400 mb-2"></i>
+                        <h3 class="font-bold">Garantía 30 días</h3>
+                        <p class="text-sm text-slate-400">Todos nuestros productos tienen garantía.</p>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <i class="fa-solid fa-credit-card text-2xl text-purple-400 mb-2"></i>
+                        <h3 class="font-bold">Pagos Seguros</h3>
+                        <p class="text-sm text-slate-400">Aceptamos transferencias, efectivo y criptos.</p>
+                    </div>
+                    <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                        <i class="fa-solid fa-award text-2xl text-yellow-500 mb-2"></i>
+                        <h3 class="font-bold">Productos Originales</h3>
+                        <p class="text-sm text-slate-400">Solo trabajamos con marcas de calidad.</p>
+                    </div>
+                </div>
+                <p class="text-slate-400 text-sm mt-4">📍 Estamos ubicados en Ypané, Paraguay. Realizamos envíos a todo el país.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOSOTROS -->
+    <div id="about-modal" class="info-modal">
+        <div class="info-modal-content">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fa-solid fa-users text-blue-500"></i> Sobre NovaStore</h2>
+                <button onclick="closeAboutModal()" class="text-slate-400 hover:text-white bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-slate-300"><span class="font-bold text-blue-400">NovaStore</span> nació en 2022 con la misión de acercar la tecnología de punta a todos los paraguayos. Somos un equipo joven, entusiasta y comprometido con la satisfacción de nuestros clientes.</p>
+                <p class="text-slate-300">Cada producto que ofrecemos es seleccionado cuidadosamente para garantizar calidad, durabilidad y el mejor precio. Creemos en la transparencia y en el trato personalizado.</p>
+                <p class="text-slate-300">Hemos realizado cientos de entregas exitosas en Asunción y el interior, y seguimos creciendo gracias a la confianza de nuestra comunidad.</p>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                    <p class="text-sm italic text-slate-400">"Más que una tienda, somos tu aliado tecnológico."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CONTACTO -->
+    <div id="contact-modal" class="info-modal">
+        <div class="info-modal-content">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fa-solid fa-envelope text-blue-500"></i> Contacto</h2>
+                <button onclick="closeContactModal()" class="text-slate-400 hover:text-white bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <h3 class="font-bold text-lg">Información de contacto</h3>
+                    <p class="flex items-center gap-3 text-slate-300"><i class="fa-brands fa-whatsapp text-green-400 w-6"></i> +595 986 725905</p>
+                    <p class="flex items-center gap-3 text-slate-300"><i class="fa-regular fa-envelope text-blue-400 w-6"></i> info@novastore.com.py</p>
+                    <p class="flex items-center gap-3 text-slate-300"><i class="fa-solid fa-location-dot text-red-400 w-6"></i> Ypané, Central, Paraguay</p>
+                    <p class="flex items-center gap-3 text-slate-300"><i class="fa-regular fa-clock text-yellow-400 w-6"></i> Lun-Dom 7:00 a 20:00</p>
+                    <div class="flex gap-4 mt-6">
+                        <a href="#" class="text-slate-400 hover:text-white text-2xl"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white text-2xl"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <h3 class="font-bold text-lg mb-4">Envíanos un mensaje</h3>
+                    <form onsubmit="event.preventDefault(); Swal.fire('Enviado', 'Gracias por contactarnos. Te responderemos a la brevedad.', 'success');">
+                        <input type="text" placeholder="Nombre" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-3 mb-3 text-sm">
+                        <input type="email" placeholder="Correo electrónico" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-3 mb-3 text-sm">
+                        <textarea rows="3" placeholder="Mensaje" class="w-full bg-slate-700 border border-slate-600 rounded-lg p-3 mb-3 text-sm"></textarea>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-bold transition">Enviar mensaje</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POLÍTICAS (con acordeones) -->
+    <div id="policies-modal" class="info-modal">
+        <div class="info-modal-content">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center">
+                <h2 class="text-2xl font-bold flex items-center gap-2"><i class="fa-solid fa-file-lines text-blue-500"></i> Políticas y Términos</h2>
+                <button onclick="closePoliciesModal()" class="text-slate-400 hover:text-white bg-slate-800 w-10 h-10 rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <!-- Acordeón 1: Términos y Condiciones -->
+                <div class="border border-slate-700 rounded-xl overflow-hidden">
+                    <button onclick="togglePolicyAccordion(this)" class="w-full bg-slate-800 p-4 flex justify-between items-center text-left">
+                        <span class="font-bold"><i class="fa-solid fa-file-contract mr-2 text-blue-400"></i> Términos y Condiciones</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="accordion-content bg-slate-900/50 p-4 text-sm text-slate-400">
+                        <p>Al realizar una compra en NovaStore aceptas los siguientes términos: los precios están expresados en guaraníes (Gs) y pueden variar sin previo aviso. La disponibilidad de productos está sujeta a stock. Nos reservamos el derecho de modificar precios y condiciones. Las compras realizadas implican la aceptación de estas políticas.</p>
+                    </div>
+                </div>
+                <!-- Acordeón 2: Política de Envíos -->
+                <div class="border border-slate-700 rounded-xl overflow-hidden">
+                    <button onclick="togglePolicyAccordion(this)" class="w-full bg-slate-800 p-4 flex justify-between items-center text-left">
+                        <span class="font-bold"><i class="fa-solid fa-truck mr-2 text-green-400"></i> Política de Envíos</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="accordion-content bg-slate-900/50 p-4 text-sm text-slate-400">
+                        <p>Realizamos envíos a todo Paraguay a través de courier local. El tiempo de entrega es de 24 a 48 horas hábiles para zonas urbanas. Para el interior, puede demorar hasta 72 horas. El costo de envío se calcula al finalizar la compra. Los pedidos se despachan una vez confirmado el pago.</p>
+                    </div>
+                </div>
+                <!-- Acordeón 3: Política de Devoluciones -->
+                <div class="border border-slate-700 rounded-xl overflow-hidden">
+                    <button onclick="togglePolicyAccordion(this)" class="w-full bg-slate-800 p-4 flex justify-between items-center text-left">
+                        <span class="font-bold"><i class="fa-solid fa-rotate-left mr-2 text-yellow-400"></i> Política de Devoluciones</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="accordion-content bg-slate-900/50 p-4 text-sm text-slate-400">
+                        <p>Aceptamos devoluciones dentro de los 7 días posteriores a la recepción, siempre que el producto esté sin uso, en su empaque original y con todos los accesorios. Los gastos de envío de la devolución corren por cuenta del cliente, excepto si el producto llegó defectuoso o incorrecto.</p>
+                    </div>
+                </div>
+                <!-- Acordeón 4: Garantía de Productos -->
+                <div class="border border-slate-700 rounded-xl overflow-hidden">
+                    <button onclick="togglePolicyAccordion(this)" class="w-full bg-slate-800 p-4 flex justify-between items-center text-left">
+                        <span class="font-bold"><i class="fa-solid fa-shield-halved mr-2 text-purple-400"></i> Garantía de Productos</span>
+                        <i class="fa-solid fa-chevron-down transition-transform"></i>
+                    </button>
+                    <div class="accordion-content bg-slate-900/50 p-4 text-sm text-slate-400">
+                        <p>Todos los productos electrónicos y accesorios tienen garantía de 30 días por defectos de fábrica. La garantía no cubre daños por mal uso, golpes, humedad o manipulación indebida. Para hacer efectiva la garantía, contactanos por WhatsApp con tu comprobante de compra.</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-500 mt-4">Estas políticas pueden ser actualizadas periódicamente. Te recomendamos revisarlas antes de realizar tu compra.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 gradient-bg">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Column 1: About -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-white">NovaStore</h3>
+                    <p class="text-sm text-slate-400 mb-4">
+                        Tu tienda online de tecnología y accesorios en Paraguay. Productos de calidad con garantía y envío rápido.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Column 2: Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-white">Enlaces Rápidos</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="goHome()" class="text-slate-400 hover:text-white">Inicio</a></li>
+                        <li><a href="#" onclick="openStoreModal()" class="text-slate-400 hover:text-white">Tienda</a></li>
+                        <li><a href="#" onclick="openAboutModal()" class="text-slate-400 hover:text-white">Nosotros</a></li>
+                        <li><a href="#" onclick="openContactModal()" class="text-slate-400 hover:text-white">Contacto</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Policies -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-white">Políticas</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" onclick="openPoliciesModal()" class="text-slate-400 hover:text-white">Términos y Condiciones</a></li>
+                        <li><a href="#" onclick="openPoliciesModal()" class="text-slate-400 hover:text-white">Política de Envíos</a></li>
+                        <li><a href="#" onclick="openPoliciesModal()" class="text-slate-400 hover:text-white">Política de Devoluciones</a></li>
+                        <li><a href="#" onclick="openPoliciesModal()" class="text-slate-400 hover:text-white">Garantía de Productos</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 4: Contact -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-white">Contacto</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li class="text-slate-400"><i class="fas fa-phone-alt mr-2"></i> +595 986725905</li>
+                        <li class="text-slate-400"><i class="fas fa-envelope mr-2"></i> info@novastore.com.py</li>
+                        <li class="text-slate-400"><i class="fas fa-map-marker-alt mr-2"></i> Ypane, Paraguay</li>
+                        <li class="text-slate-400"><i class="fas fa-clock mr-2"></i> Lun-Dom: 7am - 20pm</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 mt-8 pt-8 text-center text-sm text-slate-500">
+                <p>&copy; 2024 NovaStore. Todos los derechos reservados.</p>
+                <p class="mt-2 text-xs">Los precios están en Guaraníes (Gs). Productos sujetos a disponibilidad.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // --- INVENTORY ACTUALIZADO: categorías corregidas, descripciones únicas y productos genéricos para accesorios ---
+        let inventario = [
+            { 
+                id: 1, 
+                titulo: "Cartucho Life Pod 10K - Sabores a elección", 
+                precio: 65000, 
+                precioAnt: 75000,
+                img: "https://ik.imagekit.io/staxxcraft/unnamed.jpg", 
+                cat: "tech", 
+                estado: "Nuevo",
+                desc: "Cartucho de vapeo con capacidad de 10,000 puffs. Batería de alto rendimiento y sabores intensos. Incluye malla cerámica para mejor sabor.",
+                sabores: ["Menta", "Frutilla", "Uva", "Mango", "Sandía", "Tutti Frutti"]
+            },
+            { 
+                id: 2, 
+                titulo: "Cable USB C - Ecopower", 
+                precio: 12000, 
+                precioAnt: 15000,
+                img: "https://ik.imagekit.io/staxxcraft/111667.2_1.jpg", 
+                cat: "accesorios", 
+                estado: "Nuevo",
+                desc: "Cable USB C de alta velocidad con trenzado de nylon resistente. Soporta carga rápida y transferencia de datos hasta 480 Mbps. Longitud: 1.2 metros." 
+            },
+            { 
+                id: 3, 
+                titulo: "Cargador iPhone USB C a Lightning", 
+                precio: 45000, 
+                precioAnt: null,
+                img: "https://ik.imagekit.io/novastore/images.jpg", 
+                cat: "accesorios", 
+                estado: "Nuevo",
+                desc: "Cargador original para iPhone con conector Lightning. Compatible con todos los modelos iPhone desde el 8 en adelante. Potencia de 20W." 
+            },
+            { 
+                id: 4, 
+                titulo: "Xiaomi Buds Lite", 
+                precio: 35000, 
+                precioAnt: 50000,
+                img: "https://ik.imagekit.io/staxxcraft/Auriculares_Xiaomi_XIBHR4197CN_04.webp", 
+                cat: "tech", 
+                estado: "Nuevo",
+                desc: "Auriculares inalámbricos Xiaomi con cancelación de ruido ambiental. Bluetooth 5.0, batería de 20 horas (estuche incluido)." 
+            },
+            { 
+                id: 5, 
+                titulo: "Cable Micro USB V8", 
+                precio: 9000, 
+                precioAnt: 11000,
+                img: "https://ik.imagekit.io/staxxcraft/micro-3-m.jpg?updatedAt=1767381845378", 
+                cat: "accesorios", 
+                estado: "Outlet",
+                desc: "Cable Micro USB para dispositivos Android. Construcción reforzada con conector en forma de V para mejor agarre. Longitud: 1 metro." 
+            },
+             { 
+                id: 6, 
+                titulo: "Soporte para moto 360 a prueba de agua", 
+                precio: 35000, 
+                precioAnt: null,
+                img: "https://ik.imagekit.io/staxxcraft/d8165dd9-5e84-4d91-a71f-b1660ef56a30.jpg", 
+                cat: "accesorios", 
+                estado: "nuevo",
+                desc: "Soporte universal para moto con rotación de 360 grados. Resistente al agua y a golpes. Incluye base para manubrio." 
+            },
+             { 
+                id: 7, 
+                titulo: "Audifonos Bluetooth hengda alta calidad", 
+                precio: 65000, 
+                precioAnt: 90000,
+                img: "https://ik.imagekit.io/staxxcraft/796a3aa6-6b12-4d44-a687-fba196f93dc2.jpg", 
+                cat: "accesorios", 
+                estado: "nuevo",
+                desc: "Audífonos over-ear con sonido HD y cancelación de ruido pasiva. Batería de 30 horas, plegables, incluye cable auxiliar." 
+            },
+            { 
+                id: 8, 
+                titulo: "Audifonos Bluetooth hengda yq10561", 
+                precio: 45000, 
+                precioAnt: 50000,
+                img: "https://ik.imagekit.io/staxxcraft/635065413_122111491011213676_4090689254919324710_n.jpg", 
+                cat: "accesorios", 
+                estado: "nuevo",
+                desc: "Audífonos inalámbricos tipo diadema con micrófono integrado. Conecta hasta 10 metros de distancia. Batería 15 horas." 
+            },
+            { 
+                id: 9, 
+                titulo: "Aro de luz pequeño 16cm hengda", 
+                precio: 45000, 
+                precioAnt: 50000,
+                img: "  https://ik.imagekit.io/staxxcraft/646592ed-f987-4100-8f33-0d81149b19d8.jpg", 
+                cat: "accesorios", 
+                estado: "nuevo",
+                desc: "Aro de luz LED de 16cm con trípode flexible. Ideal para selfies, streaming y videollamadas. Intensidad regulable." 
+            },
+             { 
+                id: 10, 
+                titulo: "parlante portátil Ecopower EP-2309", 
+                precio: 200000, 
+                precioAnt: null ,
+                img: "  https://ik.imagekit.io/staxxcraft/59733079-7c02-4d10-9223-c8aa76e8e6a2.jpg", 
+                cat: "tech", 
+                estado: "nuevo",
+                desc: "Parlante portátil con sonido estéreo y luces LED. Bluetooth, USB y ranura para tarjeta. Batería recargable de 2000mAh." 
+            },
+            { 
+                id: 11, 
+                titulo: "parlante inalámbrico Ecopower EP-S110", 
+                precio: 150000, 
+                precioAnt: null ,
+                img: "  https://ik.imagekit.io/staxxcraft/d3663c09-21fe-4fc8-9468-b30d2978eae0.jpg", 
+                cat: "tech", 
+                estado: "nuevo",
+                desc: "Parlante compacto con sonido envolvente y resistencia a salpicaduras. Conexión Bluetooth 5.0 y entrada auxiliar." 
+            },
+              { 
+                id: 12, 
+                titulo: "parlante inalámbrico Ecopower EP-2306", 
+                precio: 100000, 
+                precioAnt: null ,
+                img: "https://ik.imagekit.io/staxxcraft/1c3b0c47-c955-4152-a1b9-aed3953123b7.jpg", 
+                cat: "tech", 
+                estado: "nuevo",
+                desc: "Parlante portátil con diseño cilíndrico y bajos reforzados. Batería de 8 horas, manos libres integrado." 
+            },
+               { 
+                id: 13, 
+                titulo: "parlante inalámbrico Ecopower EP-2365", 
+                precio: 700000, 
+                precioAnt: null ,
+                img: "https://ik.imagekit.io/staxxcraft/478cfb57-4e2c-4a11-b8a8-15b3ee0fe5b9.jpg", 
+                cat: "tech", 
+                estado: "nuevo",
+                desc: "Parlante de alta potencia con sonido 360° y ecualizador. Ideal para fiestas, incluye micrófono inalámbrico." 
+            },
+             { 
+                id: 14, 
+                titulo: "Quencher con brillo", 
+                precio: 80000, 
+                precioAnt: null ,
+                img: "  https://ik.imagekit.io/staxxcraft/2f4e40d6-4919-4105-9aa6-9cfb7ad9ff85.jpg", 
+                cat: "accesorios", 
+                estado: "nuevo",
+                desc: "Vaso térmico Quencher con acabado brillante y pajilla reutilizable. Mantiene la temperatura por horas. Capacidad 1 litro." 
+            },
+            // Productos genéricos para el modal de accesorios (no se muestran en grid)
+            { 
+                id: 100, 
+                titulo: "Funda para teléfono (genérica)", 
+                precio: 25000, 
+                precioAnt: null,
+                img: "https://images.unsplash.com/photo-1541877944-c82f4d9e8e5c?w=800&q=80", 
+                cat: "fundas-laminas", 
+                estado: "Nuevo",
+                desc: "Funda protectora de silicona o TPU, según disponibilidad. Ajuste preciso para tu modelo.",
+                hiddenFromGrid: true
+            },
+            { 
+                id: 101, 
+                titulo: "Lámina de vidrio templado", 
+                precio: 15000, 
+                precioAnt: null,
+                img: "https://images.unsplash.com/photo-1588514912908-8f5891714f8d?w=800&q=80", 
+                cat: "fundas-laminas", 
+                estado: "Nuevo",
+                desc: "Lámina de vidrio templado 9D con dureza 9H. Antiarañazos y cubierta oleofóbica. Incluye paño de limpieza.",
+                hiddenFromGrid: true
+            }
+        ];
+
+        // --- MARCAS Y MODELOS (ampliado) ---
+        const marcasModelos = {
+            "Apple": [
+                "iPhone 7", "iPhone 7 Plus", "iPhone 8", "iPhone 8 Plus", "iPhone X", "iPhone XS", "iPhone XS Max", "iPhone XR",
+                "iPhone 11", "iPhone 11 Pro", "iPhone 11 Pro Max", "iPhone 12", "iPhone 12 Mini", "iPhone 12 Pro", "iPhone 12 Pro Max",
+                "iPhone 13", "iPhone 13 Mini", "iPhone 13 Pro", "iPhone 13 Pro Max", "iPhone 14", "iPhone 14 Plus", "iPhone 14 Pro", "iPhone 14 Pro Max",
+                "iPhone 15", "iPhone 15 Plus", "iPhone 15 Pro", "iPhone 15 Pro Max", "iPhone 16", "iPhone 16 Plus", "iPhone 16 Pro", "iPhone 16 Pro Max",
+                "iPhone 17", "iPhone 17 Air", "iPhone 17 Pro", "iPhone 17 Pro Max"
+            ],
+            "Samsung": [
+                "S10", "S10+", "S10e", "S10 5G", "S20", "S20+", "S20 Ultra", "S21", "S21+", "S21 Ultra", "S21 FE",
+                "S22", "S22+", "S22 Ultra", "S23", "S23+", "S23 Ultra", "S23 FE", "S24", "S24+", "S24 Ultra", "S24 FE", "S25", "S25+", "S25 Ultra",
+                "A10", "A10s", "A20", "A20e", "A30", "A30s", "A40", "A50", "A50s", "A60", "A70", "A70s", "A80",
+                "A01", "A11", "A21", "A21s", "A31", "A41", "A51", "A51 5G", "A71", "A71 5G",
+                "A02", "A02s", "A03s", "A03 Core", "A12", "A22", "A22 5G", "A32", "A32 5G",
+                "A42 5G", "A52", "A52 5G", "A52s 5G", "A72", "A82 5G",
+                "A03", "A03s", "A04", "A04s", "A04e", "A13", "A13 5G", "A23", "A23 5G", "A33 5G", "A53 5G", "A73 5G",
+                "A05", "A05s", "A14", "A14 5G", "A24", "A25 5G", "A34 5G", "A54 5G",
+                "A06", "A15", "A15 5G", "A16", "A16 5G", "A25", "A35 5G", "A55 5G",
+                "M10", "M10s", "M20", "M30", "M30s", "M40", "M01", "M11", "M21", "M31", "M31s", "M51",
+                "M02", "M12", "M22", "M32", "M42 5G", "M52 5G", "M62", "M04", "M13", "M13 5G", "M23", "M33 5G", "M53 5G",
+                "M05", "M14", "M34 5G", "M54 5G", "M06", "M15", "M35 5G", "M55 5G"
+            ],
+            "Xiaomi": ["Redmi Note 12", "Redmi Note 11", "Redmi Note 10", "Redmi Note 9", "Redmi 13C", "Redmi 12", "Redmi 10", "POCO X6", "POCO X5", "POCO X4", "POCO M5", "POCO F5", "Xiaomi 14", "Xiaomi 13", "Xiaomi 12", "Xiaomi 11", "Mi 11", "Mi 10", "Mi 9"],
+            "Motorola": ["Moto G84", "Moto G73", "Moto G54", "Moto G53", "Moto G24", "Moto Edge 50", "Moto Edge 40", "Moto Edge 30", "Moto Edge 20", "Moto G14", "Moto G13", "Moto G04", "Moto E40", "Moto E32"],
+            "Honor": ["Honor Magic 6", "Honor Magic 5", "Honor Magic 4", "Honor 90", "Honor 80", "Honor 70", "Honor 50", "Honor X9", "Honor X8", "Honor X7", "Honor X6"],
+            "Google Pixel": ["Pixel 9 Pro", "Pixel 9", "Pixel 8 Pro", "Pixel 8", "Pixel 7 Pro", "Pixel 7", "Pixel 6 Pro", "Pixel 6", "Pixel 5", "Pixel 4"],
+            "OnePlus": ["OnePlus 12", "OnePlus 11", "OnePlus 10 Pro", "OnePlus 9", "OnePlus Nord 4", "OnePlus Nord 3", "OnePlus Nord CE3"],
+            "Otras": ["Huawei P60", "Huawei P50", "Huawei Mate 50", "LG G8", "LG Velvet", "Sony Xperia 1 V", "Sony Xperia 10 V", "Nokia G60", "Nokia X30", "Realme 11", "Realme 10"]
+        };
+
+        // --- CARRITO ---
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        let currentProduct = null;
+        let currentFlavor = null;
+        let currentBrand = null;
+        let currentModel = null;
+        let currentType = 'funda'; // 'funda' o 'estuche'
+        let isLoading = false;
+        const container = document.getElementById('feed-container');
+        const loadingSkeleton = document.getElementById('loading-skeleton');
+
+        // --- Variables para la nueva modal de accesorios ---
+        let selectedCase = { brand: null, model: null };
+        let selectedGlass = { brand: null, model: null };
+        let caseSearchTerm = '';
+        let glassSearchTerm = '';
+
+        // --- RENDER PRODUCTS (excluye productos ocultos) ---
+        function renderProducts(filterTag) {
+            container.innerHTML = '';
+            let filtered = inventario.filter(p => !p.hiddenFromGrid);
+            if (filterTag !== 'todo') {
+                filtered = filtered.filter(p => p.cat === filterTag);
+            }
+            
+            if(filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 md:col-span-5 text-center py-20">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-600"></i>
+                        <p class="text-slate-500">No hay productos en esta categoría.</p>
+                        <button onclick="renderProducts('todo')" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
+                            Ver todos los productos
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            filtered.forEach(prod => {
+                const card = document.createElement('div');
+                const precioFmt = prod.precio.toLocaleString('es-PY');
+                const precioAntFmt = prod.precioAnt ? prod.precioAnt.toLocaleString('es-PY') : '';
+                
+                card.className = 'product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 relative cursor-pointer group hover:border-slate-600 transition-colors flex flex-col h-full';
+                card.onclick = () => openProduct(prod.id);
+
+                card.innerHTML = `
+                    <div class="relative w-full aspect-square overflow-hidden bg-slate-800">
+                        <img src="${prod.img}" 
+                             loading="lazy"
+                             onerror="this.src='https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800&q=80'"
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                             alt="${prod.titulo}">
+                        ${prod.precioAnt ? `
+                            <div class="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm flex items-center gap-1">
+                                <i class="fa-solid fa-tag text-[8px]"></i> OFERTA
+                            </div>
+                        ` : ''}
+                        <div class="absolute bottom-2 right-2 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded">
+                            ${prod.estado}
+                        </div>
+                    </div>
+                    <div class="p-3 md:p-4 flex flex-col flex-1">
+                        <p class="text-xs text-slate-400 mb-1 uppercase">${prod.cat}</p>
+                        <h3 class="text-sm md:text-base font-bold text-white leading-tight mb-2 line-clamp-2">${prod.titulo}</h3>
+                        <div class="mt-auto pt-2 flex items-end justify-between border-t border-slate-800/50">
+                            <div>
+                                <p class="text-lg md:text-xl font-bold text-blue-400 font-mono">${precioFmt} Gs</p>
+                                ${prod.precioAnt ? `
+                                    <p class="text-xs text-slate-500 line-through">${precioAntFmt} Gs</p>
+                                ` : ''}
+                            </div>
+                            <button onclick="event.stopPropagation(); addToCart(${prod.id})" class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-blue-500 hover:bg-blue-600 hover:text-white transition group-hover:bg-blue-600 group-hover:text-white">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // --- PRODUCT MODAL FUNCTIONS ---
+        function openProduct(id) {
+            const prod = inventario.find(p => p.id === id);
+            if(!prod) return;
+
+            currentProduct = prod;
+            currentFlavor = null;
+            currentBrand = null;
+            currentModel = null;
+            currentType = 'funda';
+
+            document.getElementById('p-img').classList.add('skeleton');
+            
+            setTimeout(() => {
+                document.getElementById('p-img').src = prod.img;
+                document.getElementById('p-img').classList.remove('skeleton');
+                document.getElementById('p-title').innerText = prod.titulo;
+                document.getElementById('p-cat').innerText = prod.cat.toUpperCase();
+                document.getElementById('p-price').innerText = prod.precio.toLocaleString('es-PY') + " Gs";
+                document.getElementById('p-desc').innerText = prod.desc;
+                document.getElementById('p-badge').innerText = prod.estado;
+
+                const oldPriceEl = document.getElementById('p-old-price');
+                if(prod.precioAnt) {
+                    oldPriceEl.innerText = prod.precioAnt.toLocaleString('es-PY') + " Gs";
+                    oldPriceEl.classList.remove('hidden');
+                } else {
+                    oldPriceEl.classList.add('hidden');
+                }
+                
+                // Sabores
+                const flavorsSection = document.getElementById('flavors-section');
+                const flavorsContainer = document.getElementById('flavors-container');
+                if(prod.sabores) {
+                    flavorsSection.classList.remove('hidden');
+                    flavorsContainer.innerHTML = '';
+                    prod.sabores.forEach(sabor => {
+                        const btn = document.createElement('button');
+                        btn.className = `px-3 py-2 rounded-lg border ${currentFlavor === sabor ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700'}`;
+                        btn.innerText = sabor;
+                        btn.onclick = () => {
+                            currentFlavor = sabor;
+                            document.querySelectorAll('#flavors-container button').forEach(b => {
+                                b.className = 'px-3 py-2 rounded-lg border bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700';
+                            });
+                            btn.className = 'px-3 py-2 rounded-lg border bg-blue-600 border-blue-500 text-white';
+                        };
+                        flavorsContainer.appendChild(btn);
+                    });
+                    if(prod.sabores.length > 0) {
+                        currentFlavor = prod.sabores[0];
+                        flavorsContainer.firstChild.className = 'px-3 py-2 rounded-lg border bg-blue-600 border-blue-500 text-white';
+                    }
+                } else {
+                    flavorsSection.classList.add('hidden');
+                }
+
+                // Selector de marca/modelo (para productos fundas-laminas existentes)
+                const phoneModelSection = document.getElementById('phone-model-section');
+                if(prod.cat === 'fundas-laminas') {
+                    phoneModelSection.classList.remove('hidden');
+                    document.getElementById('type-funda').className = 'flex-1 py-2 px-4 rounded-lg border bg-blue-600 border-blue-500 text-white';
+                    document.getElementById('type-estuche').className = 'flex-1 py-2 px-4 rounded-lg border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+                    initAccordions();
+                } else {
+                    phoneModelSection.classList.add('hidden');
+                }
+                
+                document.getElementById('product-view').classList.add('active');
+                document.getElementById('modal-overlay').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }, 300);
+        }
+
+        function closeProduct() {
+            document.getElementById('product-view').classList.remove('active');
+            document.getElementById('modal-overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentProduct = null;
+            currentFlavor = null;
+            currentBrand = null;
+            currentModel = null;
+            currentType = 'funda';
+        }
+
+        // --- FUNCIONES PARA EL SELECTOR DENTRO DEL MODAL DE PRODUCTO ---
+        function selectType(type) {
+            currentType = type;
+            document.getElementById('type-funda').className = `flex-1 py-2 px-4 rounded-lg border ${type === 'funda' ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'} transition`;
+            document.getElementById('type-estuche').className = `flex-1 py-2 px-4 rounded-lg border ${type === 'estuche' ? 'bg-blue-600 border-blue-500 text-white' : 'border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700'} transition`;
+            if(currentBrand && currentModel) {
+                updateProductTitleForAccessory();
+            }
+        }
+
+        function updateProductTitleForAccessory() {
+            if(currentProduct && currentProduct.cat === 'fundas-laminas') {
+                const typeText = currentType === 'funda' ? 'Funda para' : 'Lámina para';
+                document.getElementById('p-title').innerText = `${currentProduct.titulo} - ${typeText} ${currentBrand} ${currentModel}`;
+            }
+        }
+
+        function initAccordions() {
+            const brandAccordion = document.getElementById('brand-accordion');
+            const brandList = document.getElementById('brand-list');
+            
+            brandAccordion.onclick = () => {
+                brandList.classList.toggle('active');
+                brandAccordion.querySelector('i').classList.toggle('fa-chevron-down');
+                brandAccordion.querySelector('i').classList.toggle('fa-chevron-up');
+            };
+
+            brandList.innerHTML = '';
+            Object.keys(marcasModelos).forEach(marca => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-3 hover:bg-slate-800 transition';
+                btn.innerText = marca;
+                btn.onclick = () => {
+                    currentBrand = marca;
+                    document.getElementById('selected-brand-text').innerHTML = `<i class="fa-solid fa-mobile-alt"></i> ${marca}`;
+                    updateModelList(marca);
+                    updateProductTitleForAccessory();
+                    brandList.classList.remove('active');
+                    brandAccordion.querySelector('i').classList.remove('fa-chevron-up');
+                    brandAccordion.querySelector('i').classList.add('fa-chevron-down');
+                };
+                brandList.appendChild(btn);
+            });
+
+            const modelAccordion = document.getElementById('model-accordion');
+            modelAccordion.onclick = () => {
+                document.getElementById('model-list').classList.toggle('active');
+                modelAccordion.querySelector('i').classList.toggle('fa-chevron-down');
+                modelAccordion.querySelector('i').classList.toggle('fa-chevron-up');
+            };
+        }
+
+        function updateModelList(marca) {
+            const modelList = document.getElementById('model-list');
+            modelList.innerHTML = '';
+            marcasModelos[marca].forEach(modelo => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-3 hover:bg-slate-800 transition';
+                btn.innerText = modelo;
+                btn.onclick = () => {
+                    currentModel = modelo;
+                    document.getElementById('selected-model-text').innerHTML = `<i class="fa-solid fa-layer-group"></i> ${modelo}`;
+                    updateProductTitleForAccessory();
+                    modelList.classList.remove('active');
+                    document.getElementById('model-accordion').querySelector('i').classList.remove('fa-chevron-up');
+                    document.getElementById('model-accordion').querySelector('i').classList.add('fa-chevron-down');
+                };
+                modelList.appendChild(btn);
+            });
+        }
+
+        // --- CARRITO FUNCTIONS ---
+        function addToCart(id, flavor = null, brand = null, model = null, type = null) {
+            const prod = inventario.find(p => p.id === id);
+            if(!prod) return;
+
+            const existingItemIndex = carrito.findIndex(item => 
+                item.id === id && 
+                item.flavor === flavor && 
+                item.brand === brand && 
+                item.model === model &&
+                item.type === type
+            );
+
+            if(existingItemIndex >= 0) {
+                carrito[existingItemIndex].cantidad += 1;
+            } else {
+                carrito.push({
+                    id: id,
+                    cantidad: 1,
+                    flavor: flavor,
+                    brand: brand,
+                    model: model,
+                    type: type
+                });
+            }
+
+            updateCart();
+            Swal.fire({
+                icon: 'success',
+                title: '¡Producto agregado!',
+                text: 'El producto se ha añadido al carrito.',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+        }
+
+        function addToCartFromModal() {
+            if(!currentProduct) return;
+
+            let flavor = null;
+            if(currentProduct.sabores) {
+                if(!currentFlavor) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Selecciona un sabor',
+                        text: 'Por favor, selecciona un sabor antes de agregar al carrito.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    return;
+                }
+                flavor = currentFlavor;
+            }
+
+            let brand = null, model = null, type = null;
+            if(currentProduct.cat === 'fundas-laminas') {
+                if(!currentBrand || !currentModel) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Selecciona marca y modelo',
+                        text: 'Por favor, selecciona la marca y modelo de tu teléfono.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    return;
+                }
+                brand = currentBrand;
+                model = currentModel;
+                type = currentType;
+            }
+
+            addToCart(currentProduct.id, flavor, brand, model, type);
+            closeProduct();
+        }
+
+        function buyNow() {
+            if(!currentProduct) return;
+
+            let flavor = null;
+            if(currentProduct.sabores) {
+                if(!currentFlavor) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Selecciona un sabor',
+                        text: 'Por favor, selecciona un sabor antes de agregar al carrito.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    return;
+                }
+                flavor = currentFlavor;
+            }
+
+            let brand = null, model = null, type = null;
+            if(currentProduct.cat === 'fundas-laminas') {
+                if(!currentBrand || !currentModel) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Selecciona marca y modelo',
+                        text: 'Por favor, selecciona la marca y modelo de tu teléfono.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    return;
+                }
+                brand = currentBrand;
+                model = currentModel;
+                type = currentType;
+            }
+
+            addToCart(currentProduct.id, flavor, brand, model, type);
+            closeProduct();
+            openCart();
+        }
+
+        function removeFromCart(index) {
+            carrito.splice(index, 1);
+            updateCart();
+        }
+
+        function updateCart() {
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+
+            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+            document.getElementById('cart-count').innerText = totalItems;
+            document.getElementById('cart-count').style.display = totalItems > 0 ? 'flex' : 'none';
+
+            if(document.getElementById('cart-modal').classList.contains('hidden') === false) {
+                renderCart();
+            }
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cart-items-container');
+            const totalEl = document.getElementById('cart-total');
+
+            if(carrito.length === 0) {
+                container.innerHTML = '<p class="text-slate-500 text-center py-8">Tu carrito está vacío</p>';
+                totalEl.innerText = '0 Gs';
+                return;
+            }
+
+            let total = 0;
+            container.innerHTML = '';
+
+            carrito.forEach((item, index) => {
+                const prod = inventario.find(p => p.id === item.id);
+                if(!prod) return;
+
+                const subtotal = prod.precio * item.cantidad;
+                total += subtotal;
+
+                const div = document.createElement('div');
+                div.className = 'bg-slate-800 rounded-xl p-4 flex items-center gap-4';
+                div.innerHTML = `
+                    <div class="w-16 h-16 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
+                        <img src="${prod.img}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800&q=80'">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-white truncate">${prod.titulo}</h4>
+                        ${item.flavor ? `<p class="text-sm text-slate-400">Sabor: ${item.flavor}</p>` : ''}
+                        ${item.type ? `<p class="text-sm text-slate-400">${item.type === 'funda' ? 'Funda' : 'Lámina'} para: ${item.brand} ${item.model}</p>` : ''}
+                        ${item.brand && item.model && !item.type ? `<p class="text-sm text-slate-400">Para: ${item.brand} ${item.model}</p>` : ''}
+                        <p class="text-blue-400 font-bold">${subtotal.toLocaleString('es-PY')} Gs</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeQuantity(${index}, -1)" class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center hover:bg-slate-600">
+                            <i class="fa-solid fa-minus text-xs"></i>
+                        </button>
+                        <span class="w-8 text-center font-bold">${item.cantidad}</span>
+                        <button onclick="changeQuantity(${index}, 1)" class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center hover:bg-slate-600">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                        <button onclick="removeFromCart(${index})" class="w-8 h-8 rounded-full bg-red-900/30 text-red-400 flex items-center justify-center hover:bg-red-800 hover:text-white ml-2">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            totalEl.innerText = total.toLocaleString('es-PY') + ' Gs';
+        }
+
+        function changeQuantity(index, delta) {
+            const newQuantity = carrito[index].cantidad + delta;
+            if(newQuantity < 1) {
+                removeFromCart(index);
+                return;
+            }
+            carrito[index].cantidad = newQuantity;
+            updateCart();
+        }
+
+        function openCart() {
+            renderCart();
+            document.getElementById('cart-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCart() {
+            document.getElementById('cart-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function checkout() {
+            if(carrito.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Carrito vacío',
+                    text: 'Agrega productos al carrito antes de finalizar la compra.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return;
+            }
+
+            const phone = "595986725905"; 
+            let text = `¡Hola NovaStore! 👋\nQuiero realizar la siguiente compra:\n\n`;
+
+            carrito.forEach(item => {
+                const prod = inventario.find(p => p.id === item.id);
+                text += `• *${prod.titulo}*`;
+                if(item.flavor) text += ` (Sabor: ${item.flavor})`;
+                if(item.type) text += ` (${item.type === 'funda' ? 'Funda' : 'Lámina'} para: ${item.brand} ${item.model})`;
+                text += `\n  Cantidad: ${item.cantidad}\n  Precio unitario: ${prod.precio.toLocaleString('es-PY')} Gs\n  Subtotal: ${(prod.precio * item.cantidad).toLocaleString('es-PY')} Gs\n\n`;
+            });
+
+            const total = carrito.reduce((sum, item) => {
+                const prod = inventario.find(p => p.id === item.id);
+                return sum + (prod.precio * item.cantidad);
+            }, 0);
+
+            text += `*Total: ${total.toLocaleString('es-PY')} Gs*\n\n¿Podrían confirmarme la disponibilidad y el tiempo de envío?`;
+
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+            
+            window.open(url, '_blank');
+            closeCart();
+        }
+
+        // --- FILTER FUNCTIONS ---
+        function filter(btn, type) {
+            document.querySelectorAll('.cat-btn').forEach(b => {
+                b.className = 'cat-btn px-4 py-1.5 rounded-full bg-slate-800 text-slate-300 text-sm whitespace-nowrap border border-slate-700 hover:bg-slate-700 transition hover:scale-105';
+            });
+            btn.className = 'cat-btn px-4 py-1.5 rounded-full bg-blue-600 text-white font-bold text-sm whitespace-nowrap shadow-lg shadow-blue-900/20 transition hover:scale-105';
+            
+            showLoading();
+            
+            setTimeout(() => {
+                renderProducts(type);
+                hideLoading();
+            }, 300);
+        }
+
+        // --- NUEVAS FUNCIONES PARA LA MODAL DE ACCESORIOS ---
+        function openAccessoryModal() {
+            document.getElementById('accessory-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            renderAccessoryAccordions();
+            renderGalleries();
+        }
+
+        function closeAccessoryModal() {
+            document.getElementById('accessory-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            // Resetear selecciones
+            selectedCase = { brand: null, model: null };
+            selectedGlass = { brand: null, model: null };
+            caseSearchTerm = '';
+            glassSearchTerm = '';
+            document.getElementById('search-case').value = '';
+            document.getElementById('search-glass').value = '';
+            document.getElementById('add-case-btn').disabled = true;
+            document.getElementById('add-glass-btn').disabled = true;
+        }
+
+        function renderAccessoryAccordions() {
+            const caseContainer = document.getElementById('case-accordion-container');
+            const glassContainer = document.getElementById('glass-accordion-container');
+            
+            caseContainer.innerHTML = '';
+            glassContainer.innerHTML = '';
+
+            for (let brand in marcasModelos) {
+                caseContainer.appendChild(createBrandAccordion(brand, 'case'));
+                glassContainer.appendChild(createBrandAccordion(brand, 'glass'));
+            }
+        }
+
+        function createBrandAccordion(brand, column) {
+            const div = document.createElement('div');
+            div.className = 'border border-slate-700 rounded-lg overflow-hidden';
+            const button = document.createElement('button');
+            button.className = 'w-full bg-slate-800 p-3 flex justify-between items-center text-left hover:bg-slate-700 transition accordion-btn';
+            button.innerHTML = `<span class="font-medium">${brand}</span><i class="fa-solid fa-chevron-down text-xs"></i>`;
+            const content = document.createElement('div');
+            content.className = 'accordion-content bg-slate-900/50';
+            content.id = `accordion-${column}-${brand.replace(/\s/g,'')}`;
+
+            const modelos = marcasModelos[brand];
+            const modelGrid = document.createElement('div');
+            modelGrid.className = 'model-grid p-2';
+            modelos.forEach(model => {
+                const modelBtn = document.createElement('button');
+                modelBtn.className = `model-btn ${(column === 'case' && selectedCase.brand === brand && selectedCase.model === model) ? 'selected' : (column === 'glass' && selectedGlass.brand === brand && selectedGlass.model === model) ? 'selected' : ''}`;
+                modelBtn.textContent = model;
+                modelBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if (column === 'case') {
+                        selectedCase = { brand, model };
+                        document.getElementById('add-case-btn').disabled = false;
+                        document.querySelectorAll('#case-accordion-container .model-btn').forEach(btn => btn.classList.remove('selected'));
+                    } else {
+                        selectedGlass = { brand, model };
+                        document.getElementById('add-glass-btn').disabled = false;
+                        document.querySelectorAll('#glass-accordion-container .model-btn').forEach(btn => btn.classList.remove('selected'));
+                    }
+                    modelBtn.classList.add('selected');
+                    filterAccessoryModels(column, column === 'case' ? caseSearchTerm : glassSearchTerm);
+                };
+                modelGrid.appendChild(modelBtn);
+            });
+            content.appendChild(modelGrid);
+
+            button.onclick = () => {
+                content.classList.toggle('active');
+                const icon = button.querySelector('i');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            };
+            div.appendChild(button);
+            div.appendChild(content);
+            return div;
+        }
+
+        function filterAccessoryModels(column, query) {
+            if (column === 'case') {
+                caseSearchTerm = query.toLowerCase();
+            } else {
+                glassSearchTerm = query.toLowerCase();
+            }
+            const containerId = column === 'case' ? 'case-accordion-container' : 'glass-accordion-container';
+            const container = document.getElementById(containerId);
+            const accordions = container.children;
+            for (let acc of accordions) {
+                const brand = acc.querySelector('.font-medium').innerText;
+                const modelGrid = acc.querySelector('.model-grid');
+                const models = modelGrid.querySelectorAll('.model-btn');
+                let anyVisible = false;
+                models.forEach(btn => {
+                    const modelText = btn.innerText.toLowerCase();
+                    if (modelText.includes(query.toLowerCase())) {
+                        btn.style.display = '';
+                        anyVisible = true;
+                    } else {
+                        btn.style.display = 'none';
+                    }
+                });
+                acc.style.display = anyVisible ? '' : 'none';
+            }
+        }
+
+        function renderGalleries() {
+            const caseGallery = document.getElementById('case-gallery');
+            const glassGallery = document.getElementById('glass-gallery');
+            const caseImages = [
+                'https://images.unsplash.com/photo-1541877944-c82f4d9e8e5c?w=200&q=80',
+                'https://images.unsplash.com/photo-1609083590460-7b8cc0ca65a6?w=200&q=80',
+                'https://images.unsplash.com/photo-1567581935884-3349723552ca?w=200&q=80',
+                'https://images.unsplash.com/photo-1601494537178-9c55270faf0b?w=200&q=80'
+            ];
+            const glassImages = [
+                'https://images.unsplash.com/photo-1588514912908-8f5891714f8d?w=200&q=80',
+                'https://images.unsplash.com/photo-1592754869922-6afc7c1b57f5?w=200&q=80',
+                'https://images.unsplash.com/photo-1611930022073-b7a4f5c3b0f0?w=200&q=80',
+                'https://images.unsplash.com/photo-1616348436168-d7049a9c9f4b?w=200&q=80'
+            ];
+            caseGallery.innerHTML = caseImages.map(url => `<div class="gallery-item"><img src="${url}" alt="ejemplo estuche" loading="lazy"></div>`).join('');
+            glassGallery.innerHTML = glassImages.map(url => `<div class="gallery-item"><img src="${url}" alt="ejemplo lámina" loading="lazy"></div>`).join('');
+        }
+
+        function addAccessoryToCart(column) {
+            let brand, model, type, id;
+            if (column === 'case') {
+                if (!selectedCase.brand || !selectedCase.model) return;
+                brand = selectedCase.brand;
+                model = selectedCase.model;
+                type = 'funda';
+                id = 100; // producto base estuche
+            } else {
+                if (!selectedGlass.brand || !selectedGlass.model) return;
+                brand = selectedGlass.brand;
+                model = selectedGlass.model;
+                type = 'lamina';
+                id = 101; // producto base lámina
+            }
+            addToCart(id, null, brand, model, type);
+            Swal.fire({ icon: 'success', title: 'Agregado', text: `${type === 'funda' ? 'Estuche' : 'Lámina'} para ${brand} ${model} añadido al carrito.`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            closeAccessoryModal();
+        }
+
+        // --- SEARCH FUNCTIONALITY ---
+        function initSearch() {
+            const searchInput = document.getElementById('search-input');
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+            
+            if(searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    searchProducts(e.target.value);
+                });
+            }
+            
+            if(mobileSearchInput) {
+                mobileSearchInput.addEventListener('input', function(e) {
+                    searchProducts(e.target.value);
+                });
+            }
+        }
+
+        function searchProducts(query) {
+            if(!query.trim()) {
+                renderProducts('todo');
+                return;
+            }
+            
+            const filtered = inventario.filter(p => !p.hiddenFromGrid).filter(prod => 
+                prod.titulo.toLowerCase().includes(query.toLowerCase()) ||
+                prod.desc.toLowerCase().includes(query.toLowerCase()) ||
+                prod.cat.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            if(filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 md:col-span-5 text-center py-20">
+                        <i class="fa-solid fa-search text-4xl mb-3 text-slate-600"></i>
+                        <p class="text-slate-500">No encontramos productos que coincidan con "${query}"</p>
+                        <button onclick="renderProducts('todo')" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
+                            Ver todos los productos
+                        </button>
+                    </div>`;
+            } else {
+                container.innerHTML = '';
+                filtered.forEach(prod => {
+                    const card = document.createElement('div');
+                    const precioFmt = prod.precio.toLocaleString('es-PY');
+                    
+                    card.className = 'product-card bg-slate-900 rounded-xl overflow-hidden border border-slate-800 relative cursor-pointer group hover:border-slate-600 transition-colors flex flex-col h-full';
+                    card.onclick = () => openProduct(prod.id);
+
+                    card.innerHTML = `
+                        <div class="relative w-full aspect-square overflow-hidden bg-slate-800">
+                            <img src="${prod.img}" 
+                                 loading="lazy"
+                                 onerror="this.src='https://images.unsplash.com/photo-1556656793-08538906a9f8?w=800&q=80'"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                                 alt="${prod.titulo}">
+                        </div>
+                        <div class="p-3 md:p-4 flex flex-col flex-1">
+                            <p class="text-xs text-slate-400 mb-1">${prod.cat}</p>
+                            <h3 class="text-sm md:text-base font-bold text-white leading-tight mb-2 line-clamp-2">${prod.titulo}</h3>
+                            <div class="mt-auto pt-2 flex items-end justify-between border-t border-slate-800/50">
+                                <p class="text-lg md:text-xl font-bold text-blue-400 font-mono">${precioFmt} Gs</p>
+                                <button onclick="event.stopPropagation(); addToCart(${prod.id})" class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-blue-500 hover:bg-blue-600 hover:text-white transition">
+                                    <i class="fa-solid fa-plus text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // --- MOBILE MENU ---
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            
+            if(menu.classList.contains('active')) {
+                menu.classList.remove('active');
+                overlay.classList.add('hidden');
+            } else {
+                menu.classList.add('active');
+                overlay.classList.remove('hidden');
+            }
+        }
+
+        function toggleSearch() {
+            const searchBar = document.getElementById('mobile-search');
+            searchBar.classList.toggle('hidden');
+        }
+
+        // --- LOADING STATES ---
+        function showLoading() {
+            loadingSkeleton.classList.remove('hidden');
+            container.classList.add('opacity-50');
+        }
+
+        function hideLoading() {
+            loadingSkeleton.classList.add('hidden');
+            container.classList.remove('opacity-50');
+        }
+
+        // --- FUNCIONES PARA NUEVOS MODALES INFORMATIVOS ---
+        function openStoreModal() {
+            document.getElementById('store-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeStoreModal() {
+            document.getElementById('store-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        function openAboutModal() {
+            document.getElementById('about-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeAboutModal() {
+            document.getElementById('about-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        function openContactModal() {
+            document.getElementById('contact-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeContactModal() {
+            document.getElementById('contact-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        function openPoliciesModal() {
+            document.getElementById('policies-modal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePoliciesModal() {
+            document.getElementById('policies-modal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        function togglePolicyAccordion(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('i');
+            content.classList.toggle('active');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        }
+
+        // --- FUNCIONES PARA NAVEGACIÓN (simples) ---
+        function goHome() {
+            filter(document.querySelector('.cat-btn'), 'todo');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToShop() {
+            filter(document.querySelector('.cat-btn'), 'todo');
+            setTimeout(() => document.getElementById('feed-container').scrollIntoView({ behavior: 'smooth' }), 300);
+        }
+
+        // --- INITIALIZATION ---
+        function init() {
+            showLoading();
+            
+            setTimeout(() => {
+                renderProducts('todo');
+                hideLoading();
+                
+                initSearch();
+                updateCart();
+                
+                document.addEventListener('keydown', function(e) {
+                    if(e.key === 'Escape') {
+                        closeProduct();
+                        closeCart();
+                        closeAccessoryModal();
+                        closeStoreModal();
+                        closeAboutModal();
+                        closeContactModal();
+                        closePoliciesModal();
+                        const menu = document.getElementById('mobile-menu');
+                        if(menu.classList.contains('active')) {
+                            toggleMobileMenu();
+                        }
+                    }
+                });
+            }, 500);
+        }
+
+        window.onload = init;
+    </script>
+    
+</body>
+</html>
